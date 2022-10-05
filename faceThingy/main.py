@@ -3,8 +3,13 @@ import dlib, cv2
 import numpy as np
 from matplotlib import pyplot as plt, patches, patheffects
 
+# 얼굴 감지 객체. (어떤 얼굴인지 상관없이 얼굴의 형태를 감지)
 face_detector = dlib.get_frontal_face_detector()
+
+# 랜드마크 인식 객체. (모션 트레킹과 비슷하게 얼굴을 점으로써 표현)
 shape_predictor = dlib.shape_predictor('models/shape_predictor_68_face_landmarks.dat')
+
+# 얼굴 인식 객체. (얼굴을 감지하고 해당 얼굴이 어떤 얼굴인지 인식)
 face_recognizer = dlib.face_recognition_model_v1('models/dlib_face_recognition_resnet_model_v1.dat')
 
 image_paths = {
@@ -23,7 +28,9 @@ descriptors = {
 
 # %%
 def main():
-    # Compute saved face descriptions
+    # Compute saved face descriptors.
+    # 사전 입력에 대한 처리.
+    #   사전 입력에 주어진 얼굴에 대한 학습 수행. (추후 입력에 대한 얼굴 인식에 사용됨)
     for name, image_path in image_paths.items():
         image = cv2.cvtColor(cv2.imread(image_path), cv2.COLOR_BGR2RGB)
 
@@ -35,21 +42,25 @@ def main():
     print(descriptors)
 
     # Compte input.
+    # 입력에 대해 얼굴 인식 수행.
     image = cv2.cvtColor(cv2.imread('images/matrix1.jpg'), cv2.COLOR_BGR2RGB)
 
-    rects, shapes, _ = find_faces(image)
-    target_descriptors = encode_faces(image, shapes)
+    rects, shapes, _ = find_faces(image)                # 얼굴의 형태를 감지한 후 이를 얼굴의 범위(직사각형)과 랜드마크(shape)로 변환.
+    target_descriptors = encode_faces(image, shapes)    # 위에서 감지한 형태를 인공신경망이 처리할 수 있는 형태로 변환.
 
     # Visualize output.
+    # 얼굴 인식을 수행하여 이를 시각적으로 출력.
     _, axes = plt.subplots(1, figsize=(20, 20))
     axes.imshow(image)
 
+    # 감지된 얼굴에 대해 사전 학습된 얼굴들과 대조.
     for i, descriptor in enumerate(target_descriptors):
         found = False
 
         for name, saved_descriptor in descriptors.items():
             distance = np.linalg.norm([descriptor] - saved_descriptor, axis=1)
 
+            # 감지된 얼굴이 사전 학습된 얼굴과 동일 또는 유사하다고 판단되면 해당 상황에 맞는 시각적 효과 출력.
             if distance < 0.6:
                 found = True
 
@@ -79,6 +90,7 @@ def main():
 
                 break
 
+        # 감지된 얼굴이 사전 학습된 얼굴과 일치하기 않다고 판단되면 해당 상황에 맞는 시각적 효과 출력.
         if not found:
             axes.text(
                 rects[i][0][0],
@@ -104,6 +116,7 @@ def main():
     plt.show()
 
 # %%
+# 얼굴을 감지하여 이미지에 얼굴에 해당하는 영역과 얼굴에 대한 랜드마크 반환.
 def find_faces(image):
     detected = face_detector(image, 1)
 
@@ -125,6 +138,7 @@ def find_faces(image):
     return rects, shapes, shapes_np
 
 # %%
+# 얼굴에 대한 랜드마크를 인공지능이 처리할 수 있는 형태로 변환.
 def encode_faces(image, shapes):
     return np.array([
         face_recognizer.compute_face_descriptor(image, shape) for shape in shapes
