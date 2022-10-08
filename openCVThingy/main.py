@@ -115,3 +115,162 @@ plt.show()
 # 플래그: COLOR_RGB2BGR 등등.
 
 # %%
+# OpenCV 이미지 읽기.
+img = cv2.imread('images/lion.jpg', cv2.IMREAD_UNCHANGED)   # OpenCV는 BGR, numpy 형식으로 이미지 로드.
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)                  # cvtColor를 이용해 색상 형식 변환.
+
+plt.imshow(img)
+plt.show()
+
+# %%
+# 그래이 스케일로 읽기.
+img = cv2.imread('images/lion.jpg', cv2.IMREAD_GRAYSCALE)   # OpenCV는 BGR, numpy 형식으로 이미지 로드.
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)                  # cvtColor를 이용해 색상 형식 변환.
+
+plt.imshow(img)
+plt.show()
+
+# %%
+# 이미지 쓰기.
+# 무작위 이미지 생성.
+img_rand = np.random.randint(0, 256, size=(200, 200, 3))
+print(img_rand.shape)
+
+# 이미지 저장.
+cv2.imwrite('images/img_rand.png', img_rand)
+
+img_rand_read = cv2.imread('images/img_rand.png')
+img_rand_read = cv2.cvtColor(img_rand_read, cv2.COLOR_BGR2RGB)
+
+print(type(img_rand_read))
+print(img_rand_read.shape)
+
+plt.imshow(img_rand_read)
+plt.show()
+
+# %%
+# 도형 그리기.
+# 빈 이미지 생성.
+img = np.zeros((512, 512, 3), np.uint8)
+
+plt.imshow(img)
+plt.show()
+
+# %%
+# 선 그리기.
+cv2.line(img, (0, 0), (511, 511), (0, 0, 255), 5)
+
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+plt.imshow(img)
+plt.show()
+img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+# %%
+# 사각형 그리기.
+img = cv2.rectangle(img, (400, 0), (510, 128), (0, 255, 0), 3)
+
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+plt.imshow(img)
+plt.show()
+img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+# %%
+# 원 그리기.
+img = cv2.circle(img, (450, 50), 50, (255, 0, 0), -1)
+img = cv2.circle(img, (50, 450), 50, (255, 255, 0), 2)
+
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+plt.imshow(img)
+plt.show()
+img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+# %%
+# 타원 그리기.
+img = cv2.ellipse(img, (256, 256), (150, 30), 0,0, 180, (0, 255, 0), -1)
+img = cv2.ellipse(img, (256, 256), (150, 50), 45, 0, 360, (255, 255, 255), 2)
+img = cv2.ellipse(img, (256, 256), (150, 10), 135, 0, 270, (0, 255, 255), 2)
+
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+plt.imshow(img)
+plt.show()
+img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+# %%
+# 다각형 그리기.
+# 다각형을 그리기 위한 점 정의.
+polygons = [
+    np.array(
+        [
+            [10, 5],
+            [20, 30],
+            [70, 20],
+            [50, 10]
+        ],
+        np.int32
+    ),
+    np.array(
+        [
+            [150, 5],
+            [200, 30],
+            [100, 70],
+            [50, 20]
+        ],
+        np.int32
+    ),
+]
+polygons = [polygon.reshape((-1, 2, 1)) for polygon in polygons]    # 출력 가능하도록 행렬 형태 변환.
+
+img = cv2.polylines(img, [polygons[0]], True, (250, 150, 0), 4)
+img = cv2.polylines(img, [polygons[1]], True, (255, 200, 255), 4)
+
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+plt.imshow(img)
+plt.show()
+img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+# %%
+# 텍스트 그리기.
+img = cv2.putText(img, 'OpenCV', (10, 500), cv2.FONT_HERSHEY_SIMPLEX, 4, (255, 255, 255), 3)
+
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+plt.imshow(img)
+plt.show()
+img = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+
+# %%
+# 색 공간.
+# RGB 또는 BGR
+img_orig = cv2.imread('images/dog.jpg')
+
+img = cv2.cvtColor(img_orig, cv2.COLOR_BGR2RGB)
+plt.imshow(img)
+plt.show()
+
+# %%
+# HSV (Hue, Saturation, Value)
+# a.k.a. HSB or Hue, Saturation, Brightness
+
+img = cv2.cvtColor(img_orig, cv2.COLOR_BGR2HSV)
+plt.imshow(img)
+plt.show()
+
+# %%
+# HSL (Hue, Saturation, Lightness)
+
+img = cv2.cvtColor(img_orig, cv2.COLOR_BGR2HLS)
+plt.imshow(img)
+plt.show()
+
+# %%
+# YCrCb (Y: Luminance, Cr/Cb: Chrominance Red/Blue)
+
+img = cv2.cvtColor(img_orig, cv2.COLOR_BGR2YCrCb)
+plt.imshow(img)
+plt.show()
+
+# %%
+# Gray Scale
+
+img = cv2.cvtColor(img_orig, cv2.COLOR_BGR2GRAY)
+plt.imshow(img, cmap='gray')
+plt.show()
