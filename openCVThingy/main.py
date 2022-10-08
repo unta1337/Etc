@@ -274,3 +274,149 @@ plt.show()
 img = cv2.cvtColor(img_orig, cv2.COLOR_BGR2GRAY)
 plt.imshow(img, cmap='gray')
 plt.show()
+
+# %%
+# 히스토그램.
+img1 = cv2.imread('images/flower1.jpg', 0)
+img2 = cv2.imread('images/flower2.jpg', 0)
+
+hist1 = cv2.calcHist([img1], [0], None, [256], [0, 256])
+hist2 = cv2.calcHist([img2], [0], None, [256], [0, 256])
+
+plt.figure(figsize=(12, 8))
+plt.subplot(221)
+plt.imshow(img1, 'gray')
+plt.title('Flower 1')
+
+plt.subplot(222)
+plt.imshow(img2, 'gray')
+plt.title('Flower 2')
+
+plt.subplot(223)
+plt.plot(hist1, color='r')
+plt.plot(hist2, color='g')
+plt.xlim([0, 256])
+plt.title('Histogram')
+
+plt.show()
+
+# %%
+# Mask를 적용한 히스토그램.
+img = cv2.imread('images/cat.jpg')
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+mask = np.zeros(img.shape[:2], np.uint8)
+mask[180:400, 260:600] = 255
+
+img_masked = cv2.bitwise_and(img, img, mask=mask)
+
+hist_full = cv2.calcHist([img], [1], None, [256], [0, 256])
+hist_masked = cv2.calcHist([img], [1], mask, [256], [0, 256])
+
+plt.figure(figsize=(10, 10))
+plt.subplot(221)
+plt.imshow(img)
+plt.title('Original')
+
+plt.subplot(222)
+plt.imshow(mask, 'gray')
+plt.title('Mask')
+
+plt.subplot(223)
+plt.imshow(img_masked)
+plt.title('Masked Image')
+
+plt.subplot(224)
+plt.title('Histogram')
+plt.plot(hist_full, color='r')
+plt.plot(hist_masked, color='b')
+plt.xlim([0, 256])
+
+plt.show()
+
+# %%
+# 히스토그램 평탄화. (Numpy)
+img = cv2.imread('images/taiwan.jpg', 0)
+
+hist, bins = np.histogram(img.flatten(), 256, [0, 256])
+
+# cdf: Cumulative Distribution Function
+cdf = hist.cumsum()
+cdf_m = np.ma.masked_equal(cdf, 0)
+
+cdf_m = (cdf_m - cdf_m.min()) * 255 / (cdf_m.max() - cdf_m.min())
+cdf = np.ma.filled(cdf_m, 0).astype('uint8')
+
+img2 = cdf[img]
+
+plt.figure(figsize=(10, 8))
+plt.subplot(121)
+plt.imshow(img, 'gray')
+plt.title('Original')
+
+plt.subplot(122)
+plt.imshow(img2, 'gray')
+plt.title('Equlization')
+
+plt.show()
+
+# %%
+# 히스토그램 평탄화. (OpenCV)
+img = cv2.imread('images/taiwan.jpg', 0)
+img2 = cv2.equalizeHist(img)
+
+plt.figure(figsize=(10, 8))
+plt.subplot(121)
+plt.imshow(img, 'gray')
+plt.title('Original')
+
+plt.subplot(122)
+plt.imshow(img2, 'gray')
+plt.title('Equlization')
+
+plt.show()
+
+# %%
+# 히스토그램 평탄화. (일반)
+img = cv2.imread('images/keyboard.jpg', 0)
+img2 = cv2.equalizeHist(img)
+
+plt.figure(figsize=(10, 8))
+plt.subplot(121)
+plt.imshow(img, 'gray')
+plt.title('Original')
+
+plt.subplot(122)
+plt.imshow(img2, 'gray')
+plt.title('Equlization')
+
+plt.show()
+
+# %%
+# 히스토그램 평탄화. (CLAHE, Contrast Limited Adaptive Histogram Equalization)
+img = cv2.imread('images/keyboard.jpg', 0)
+
+clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+img2 = clahe.apply(img)
+
+plt.figure(figsize=(10, 8))
+plt.subplot(121)
+plt.imshow(img, 'gray')
+plt.title('Original')
+
+plt.subplot(122)
+plt.imshow(img2, 'gray')
+plt.title('Equlization')
+
+plt.show()
+
+# %%
+# 2D 히스토그램 (Hue, Saturation)
+img = cv2.imread('images/canal.jpg')
+
+img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+
+hist_hsv = cv2.calcHist([img_hsv], [0, 1], None, [180, 256], [0, 180, 0, 256])
+
+plt.imshow(hist_hsv)
+plt.show()
